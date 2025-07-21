@@ -1,0 +1,158 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+  {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+
+  <h2 class="text-center mb-4">Welcome, <span class="text-primary">{{ user.username }}</span>!</h2>
+
+  <div class="row text-center mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;">
+        <div class="card-body">
+          <h6 class="text-muted">Total Available</h6>
+          <h3 class="{% if total_available >= 0 %}text-success{% else %}text-danger{% endif %} fw-bold">
+            ₹{{ total_available }}
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;">
+        <div class="card-body">
+          <h6 class="text-muted">Cash Balance</h6>
+          <h4 class="{% if cash_balance >= 0 %}text-success{% else %}text-danger{% endif %}">₹{{ cash_balance }}</h4>
+          <small>Income: <span class="text-success">₹{{ cash_income }}</span> | Expense: <span class="text-danger">₹{{ cash_expense }}</span></small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;">
+        <div class="card-body">
+          <h6 class="text-muted">Bank Balance</h6>
+          <h4 class="{% if bank_balance >= 0 %}text-success{% else %}text-danger{% endif %}">₹{{ bank_balance }}</h4>
+          <small>Income: <span class="text-success">₹{{ bank_income }}</span> | Expense: <span class="text-danger">₹{{ bank_expense }}</span></small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm" style="background-color: #ffffff;">
+        <div class="card-header bg-white text-primary fw-bold border-bottom-0">Add Transaction</div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <input type="text" name="title" class="form-control mb-2" placeholder="Title" required>
+            <input type="number" name="amount" class="form-control mb-2" placeholder="Amount" step="0.01" required>
+            <input type="text" name="description" class="form-control mb-2" placeholder="Description">
+            <select name="transaction_type" class="form-select mb-2">
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+            <select name="balance_type" class="form-select mb-2">
+              <option value="Cash">Cash</option>
+              <option value="Bank">Bank/UPI</option>
+            </select>
+            <button type="submit" class="btn btn-success w-100">Add</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm" style="background-color: #ffffff;">
+        <div class="card-header bg-white text-primary fw-bold border-bottom-0 d-flex justify-content-between align-items-center">
+          Recent Transactions
+          <div>
+            <select id="filterType" class="form-select form-select-sm d-inline w-auto">
+              <option value="">All Types</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+            <select id="filterBalance" class="form-select form-select-sm d-inline w-auto">
+              <option value="">All Balances</option>
+              <option value="Cash">Cash</option>
+              <option value="Bank">Bank/UPI</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover table-sm mb-0" id="transactionsTable">
+            <thead class="table-light">
+              <tr>
+                <th>Title</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Balance</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for expense in transactions %}
+              <tr data-type="{{ expense.transaction_type }}" data-balance="{{ expense.balance_type }}">
+                <td>{{ expense.title }}</td>
+                <td>
+                  {% if expense.transaction_type == 'Income' %}
+                  <span class="badge bg-success">+₹{{ expense.amount }}</span>
+                  {% else %}
+                  <span class="badge bg-danger">-₹{{ expense.amount }}</span>
+                  {% endif %}
+                </td>
+                <td>{{ expense.transaction_type }}</td>
+                <td>{{ expense.balance_type }}</td>
+                <td>{{ expense.date|date:"Y-m-d" }}</td>
+                <td>
+                  <a href="{% url 'edit_expense' expense.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                  <a href="{% url 'delete_expense' expense.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-muted">No transactions found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const typeFilter = document.getElementById("filterType");
+const balanceFilter = document.getElementById("filterBalance");
+
+function applyFilters() {
+  const rows = document.querySelectorAll("#transactionsTable tbody tr");
+  const type = typeFilter.value;
+  const balance = balanceFilter.value;
+
+  rows.forEach(row => {
+    const rowType = row.dataset.type;
+    const rowBalance = row.dataset.balance;
+    row.style.display =
+      (type === "" || rowType === type) && (balance === "" || rowBalance === balance)
+        ? ""
+        : "none";
+  });
+}
+
+typeFilter.addEventListener("change", applyFilters);
+balanceFilter.addEventListener("change", applyFilters);
+</script>
+
+{% endblock %}

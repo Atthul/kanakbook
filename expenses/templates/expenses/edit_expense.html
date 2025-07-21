@@ -1,0 +1,56 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Edit Transaction{% endblock %}
+
+{% block content %}
+
+<section class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0">✏️ Edit Transaction</h5>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Title</label>
+                <input type="text" name="title" value="{{ expense.title }}" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Amount</label>
+                <input type="number" step="0.01" name="amount" value="{{ expense.amount }}" class="form-control" required>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <input type="text" name="description" value="{{ expense.description }}" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Type</label>
+                <select name="transaction_type" class="form-select">
+                  <option value="Income" {% if expense.transaction_type == "Income" %}selected{% endif %}>Income</option>
+                  <option value="Expense" {% if expense.transaction_type == "Expense" %}selected{% endif %}>Expense</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Balance Type</label>
+                <select name="balance_type" class="form-select">
+                  <option value="Cash" {% if expense.balance_type == "Cash" %}selected{% endif %}>Cash</option>
+                  <option value="Bank" {% if expense.balance_type == "Bank" %}selected{% endif %}>Bank/UPI</option>
+                </select>
+              </div>
+              <div class="col-md-12 text-end">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

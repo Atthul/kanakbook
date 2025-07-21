@@ -1,0 +1,116 @@
+{% extends 'expenses/base.html' %}
+{% load static %}
+
+{% block title %}Home - Kanakbook{% endblock %}
+
+{% block content %}
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<main>
+
+<!-- Hero Section -->
+<section class="py-5 text-center" style="background-color: #0f0f0f;">
+    <div class="container">
+        <h1 class="display-4 fw-bold text-white">📒 Manage Your Money Smarter</h1>
+        <p class="lead text-light">Track your income & expenses easily and stay on top of your finances.</p>
+        <a href="{% url 'login' %}" class="btn btn-lg text-white" style="background-color: #f44336;">Get Started</a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5" style="background-color: #181818;">
+    <div class="container">
+        <h2 class="text-center mb-4 text-white">Features</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 bg-dark text-white">
+                    <div class="card-body text-center">
+                        <img src="{% static 'images/transactions.png' %}" alt="Track Transactions" class="mb-3" style="height:80px;">
+                        <h5 class="mt-2">Track Transactions</h5>
+                        <p>Record your income & expenses with ease and accuracy.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 bg-dark text-white">
+                    <div class="card-body text-center">
+                        <img src="{% static 'images/reports.png' %}" alt="Insightful Reports" class="mb-3" style="height:80px;">
+                        <h5 class="mt-2">Insightful Reports</h5>
+                        <p>See where your money goes with clear summaries & charts.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 bg-dark text-white">
+                    <div class="card-body text-center">
+                        <img src="{% static 'images/security.png' %}" alt="Secure & Private" class="mb-3" style="height:80px;">
+                        <h5 class="mt-2">Secure & Private</h5>
+                        <p>Your data stays safe & only accessible by you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5" style="background-color: #1c1c1c;">
+    <div class="container">
+        <h2 class="text-center mb-4 text-white">About</h2>
+        <div class="row align-items-center">
+            <div class="col-md-6 text-light">
+                <p>
+                    Kanakbook is your personal financial companion to help you control spending, plan budgets and achieve financial goals. Simple, intuitive and effective.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <img src="{% static 'images/about.png' %}" alt="About Illustration" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact / Feedback Section -->
+<section id="contact" class="py-5" style="background-color: #0f0f0f;">
+  <div class="container">
+    <h2 class="text-center text-white mb-4">Contact Support</h2>
+    <p class="text-center text-light mb-5">
+      Have questions, feedback, or need help? Fill out the form below and we’ll get back to you soon.
+    </p>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <form method="post" action="{% url 'home' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="name" class="form-label text-light">Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Your name">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label text-light">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com">
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label text-light">Message</label>
+            <textarea class="form-control" id="message" name="message" rows="4" placeholder="Write your message here"></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-lg text-white" style="background-color: #f44336;">Send Message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+{% endblock %}
